@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {DataHandlerService} from '../../service/data-handler.service';
 import {Category} from '../../model/Сategory';
+import {Task} from "../../model/Task";
 
 @Component({
   selector: 'app-categories',
@@ -11,6 +12,7 @@ import {Category} from '../../model/Сategory';
 export class CategoriesComponent implements OnInit {
 
   categories: Category[] | undefined;
+  tasks?: Task[];
 
   constructor(private dataHandler: DataHandlerService) { }
 
@@ -18,4 +20,11 @@ export class CategoriesComponent implements OnInit {
     this.categories = this.dataHandler.getCategories();
   }
 
+  showTasksByCategories(category: Category): Task[] {
+    this.tasks = this.dataHandler.getTasks().filter(task => {
+      return task.category === category;
+    });
+    console.log(this.tasks);
+    return this.tasks;
+  }
 }
