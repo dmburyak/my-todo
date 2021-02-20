@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {DataHandlerService} from '../../service/data-handler.service';
 import {Category} from '../../model/Сategory';
-import {Task} from "../../model/Task";
-import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-categories',
@@ -13,6 +11,7 @@ import {Subject} from "rxjs";
 export class CategoriesComponent implements OnInit {
 
   categories: Category[] | undefined;
+  selected?: Category;
 
   constructor(private dataHandler: DataHandlerService) { }
 
@@ -21,6 +20,7 @@ export class CategoriesComponent implements OnInit {
   }
 
   showTasksByCategories(category: Category): void {
+    this.selected = category;
     this.dataHandler.getTasksByCategories(category);
   }
 
