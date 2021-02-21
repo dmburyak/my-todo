@@ -2,20 +2,17 @@
     <div class="card-header card-header-warning">
         <h4 class="card-title">Список задач</h4>
     </div>
-    <div class="card-body table-responsive">
+    <div class="card-body table-responsive" *ngIf="tasks.length; else noTasks">
 
         <table [dataSource]="dataSource" mat-table matSort>
 
-            <!--  цвет приоритета  -->
             <ng-container matColumnDef="color">
                 <th *matHeaderCellDef mat-header-cell></th>
                 <td *matCellDef="let task" [style.background-color]="getPriorityColor(task)" class="col-color"
                     mat-cell></td>
             </ng-container>
 
-
-            <!-- нумерация-->
-            <ng-container matColumnDef="id">
+           <ng-container matColumnDef="id">
                 <th *matHeaderCellDef mat-header-cell></th>
                 <td *matCellDef="let index = index;" class="col-id" mat-cell>
 
@@ -24,22 +21,28 @@
                 </td>
             </ng-container>
 
-
-            <!-- название задачи-->
             <ng-container matColumnDef="title">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header> Название</th>
-                <td *matCellDef="let task" [class.completed]="task.completed" class="col-title" mat-cell>
+                <td *matCellDef="let task"
+                    [ngClass]="{
+                    'col-title': true,
+                    'completed': task.completed
+                    }"
+                    mat-cell>
 
                     {{task.title}}
 
                 </td>
             </ng-container>
 
-            <!--дата выполнения-->
             <ng-container matColumnDef="date">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header> Срок</th>
-                <td *matCellDef="let task" [ngClass]="{'completed': task.completed}"
-                    class="col-date"
+                <td *matCellDef="let task"
+                    [ngClass]="{
+                    'col-date': true,
+                    'completed': task.completed,
+                    'novalue': !task.date
+                    }"
                     mat-cell>
 
                     {{task.date ? (task.date | date: "medium") : "Без даты"}}
@@ -47,16 +50,18 @@
                 </td>
             </ng-container>
 
-            <!--приоритет-->
             <ng-container matColumnDef="priority">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header> Приоритет</th>
-                <td *matCellDef="let task" class="col-priority"
-                    [ngClass]="{'completed': task.completed}"
+                <td *matCellDef="let task"
+                    [ngClass]="{
+                    'col-priority': true,
+                    'completed': task.completed,
+                    'novalue': !task.priority
+                    }"
                     mat-cell
                 >
 
                     {{task.priority ? task.priority.title : "Без приоритета"}}
-
 
                 </td>
             </ng-container>
@@ -64,11 +69,14 @@
             переписать урок - указать, что это структурные директивы - изменяют поведение стандартного тега
             вместе с атрибутом дают эффект -
 
-            <!--категория-->
             <ng-container matColumnDef="category">
                 <th *matHeaderCellDef mat-header-cell mat-sort-header> Категория</th>
-                <td *matCellDef="let task" class="col-category"
-                    [ngClass]="{'completed': task.completed}"
+                <td *matCellDef="let task"
+                    [ngClass]="{
+                    'col-category': true,
+                    'completed': task.completed,
+                    'novalue': !task.category
+                    }"
                     mat-cell
                 >
 
@@ -78,10 +86,8 @@
             </ng-container>
 
 
-            <!--  заголовок таблицы-->
-            <tr *matHeaderRowDef="displayedColumns; " mat-header-row></tr>
+            <tr *matHeaderRowDef="displayedColumns;" mat-header-row></tr>
 
-            <!--  строки таблицы - набор строк из тегов td (порядок указывается в переменной displayedColumns) -->
             <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
 
         </table>
@@ -91,3 +97,7 @@
 
     </div>
 </div>
+
+<ng-template #noTasks>
+  <p class="not-found">Задачи не найдены</p>
+</ng-template>
