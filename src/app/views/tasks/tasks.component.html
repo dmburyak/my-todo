@@ -1,101 +1,103 @@
 <div class="card">
-    <div class="card-header card-header-warning">
-        <h4 class="card-title">Список задач</h4>
-    </div>
-    <div class="card-body table-responsive" *ngIf="tasks && tasks.length > 0; else noTasks">
+  <div class="card-header card-header-warning">
+    <h4 class="card-title">Список задач</h4>
+  </div>
+  <div class="card-body table-responsive" *ngIf="tasks && tasks.length > 0; else noTasks">
 
-        <table [dataSource]="dataSource" mat-table matSort>
+    <table [dataSource]="dataSource" mat-table matSort>
 
-            <ng-container matColumnDef="color">
-                <th *matHeaderCellDef mat-header-cell></th>
-                <td *matCellDef="let task" [style.background-color]="getPriorityColor(task)" class="col-color"
-                    mat-cell></td>
-            </ng-container>
+      <ng-container matColumnDef="color">
+        <th *matHeaderCellDef mat-header-cell></th>
+        <td *matCellDef="let task" [style.background-color]="getPriorityColor(task)" class="col-color"
+            mat-cell></td>
+      </ng-container>
 
-           <ng-container matColumnDef="id">
-                <th *matHeaderCellDef mat-header-cell></th>
-                <td *matCellDef="let index = index;" class="col-id" mat-cell>
+      <ng-container matColumnDef="id">
+        <th *matHeaderCellDef mat-header-cell></th>
+        <td *matCellDef="let index = index;" class="col-id" mat-cell>
 
-                    {{index + 1}}
+          {{index + 1}}
 
-                </td>
-            </ng-container>
+        </td>
+      </ng-container>
 
-            <ng-container matColumnDef="title">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header> Название</th>
-                <td *matCellDef="let task"
-                    [ngClass]="{
+      <ng-container matColumnDef="title">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Название</th>
+        <td class="pointer"
+            *matCellDef="let task"
+            [ngClass]="{
                     'col-title': true,
                     'completed': task.completed
                     }"
-                    mat-cell>
+            (click)="openEditTaskDialog(task)"
+            mat-cell>
 
-                    {{task.title}}
+          {{task.title}}
 
-                </td>
-            </ng-container>
+        </td>
+      </ng-container>
 
-            <ng-container matColumnDef="date">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header> Срок</th>
-                <td *matCellDef="let task"
-                    [ngClass]="{
+      <ng-container matColumnDef="date">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Срок</th>
+        <td *matCellDef="let task"
+            [ngClass]="{
                     'col-date': true,
                     'completed': task.completed,
                     'novalue': !task.date
                     }"
-                    mat-cell>
+            mat-cell>
 
-                    {{task.date ? (task.date | date: "medium") : "Без даты"}}
+          {{task.date ? (task.date | date: "medium") : "Без даты"}}
 
-                </td>
-            </ng-container>
+        </td>
+      </ng-container>
 
-            <ng-container matColumnDef="priority">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header> Приоритет</th>
-                <td *matCellDef="let task"
-                    [ngClass]="{
+      <ng-container matColumnDef="priority">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Приоритет</th>
+        <td *matCellDef="let task"
+            [ngClass]="{
                     'col-priority': true,
                     'completed': task.completed,
                     'novalue': !task.priority
                     }"
-                    mat-cell
-                >
+            mat-cell
+        >
 
-                    {{task.priority ? task.priority.title : "Без приоритета"}}
+          {{task.priority ? task.priority.title : "Без приоритета"}}
 
-                </td>
-            </ng-container>
+        </td>
+      </ng-container>
 
-            переписать урок - указать, что это структурные директивы - изменяют поведение стандартного тега
-            вместе с атрибутом дают эффект -
+      переписать урок - указать, что это структурные директивы - изменяют поведение стандартного тега
+      вместе с атрибутом дают эффект -
 
-            <ng-container matColumnDef="category">
-                <th *matHeaderCellDef mat-header-cell mat-sort-header> Категория</th>
-                <td *matCellDef="let task"
-                    [ngClass]="{
+      <ng-container matColumnDef="category">
+        <th *matHeaderCellDef mat-header-cell mat-sort-header> Категория</th>
+        <td *matCellDef="let task"
+            [ngClass]="{
                     'col-category': true,
                     'completed': task.completed,
                     'novalue': !task.category
                     }"
-                    mat-cell
-                >
+            mat-cell
+        >
 
-                    {{task.category ? task.category.title : "Без категории"}}
+          {{task.category ? task.category.title : "Без категории"}}
 
-                </td>
-            </ng-container>
-
-
-            <tr *matHeaderRowDef="displayedColumns;" mat-header-row></tr>
-
-            <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
-
-        </table>
-
-        <mat-paginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+        </td>
+      </ng-container>
 
 
-    </div>
+      <tr *matHeaderRowDef="displayedColumns;" mat-header-row></tr>
+
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+
+
+  </div>
 </div>
 
 <ng-template #noTasks>

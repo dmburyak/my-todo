@@ -29,4 +29,8 @@ export class AppComponent implements OnInit {
     this.dataHandler.searchTasks(this.selectedCategory, null, null, null)
       .subscribe(tasks => this.tasks = tasks);
   }
+
+  onUpdateTask(task: Task): void {
+    console.log(task);
+  }
 }
