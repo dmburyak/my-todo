@@ -2,7 +2,7 @@
     <div class="card-header card-header-warning">
         <h4 class="card-title">Список задач</h4>
     </div>
-    <div class="card-body table-responsive" *ngIf="tasks.length; else noTasks">
+    <div class="card-body table-responsive" *ngIf="tasks && tasks.length > 0; else noTasks">
 
         <table [dataSource]="dataSource" mat-table matSort>
 
