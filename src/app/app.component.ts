@@ -5,6 +5,7 @@ import {Category} from "./model/Category";
 import {Priority} from "./model/Priority";
 import {zip} from "rxjs";
 import {concatMap, map} from "rxjs/operators";
+import {IntroService} from "./service/intro.service";
 
 @Component({
     selector: 'app-root',
@@ -44,6 +45,7 @@ export class AppComponent implements OnInit {
 
     constructor(
         private dataHandler: DataHandlerService, // фасад для работы с данными
+        private introService: IntroService, // вводная справоч. информация с выделением областей
     ) {
     }
 
@@ -55,6 +57,8 @@ export class AppComponent implements OnInit {
         this.fillCategories();
 
         this.onSelectCategory(null); // показать все задачи
+
+        this.introService.startIntroJS(true);
 
     }
 
@@ -92,7 +96,7 @@ export class AppComponent implements OnInit {
 
         this.dataHandler.searchCategories(title).subscribe(categories => {
             this.categories = categories;
-			this.fillCategories();
+			this.fillCategories();			
         });
     }
 
@@ -163,8 +167,13 @@ export class AppComponent implements OnInit {
             )).subscribe(result => {
 
             const t = result.t as Task;
-            this.categoryMap.set(t.category, result.count);
 
+			// если указана категория - обновляем счетчик для соотв. категории
+            // чтобы не обновлять весь список - обновим точечно
+            if (t.category) {
+                this.categoryMap.set(t.category, result.count);
+            }
+			
             this.updateTasksAndStat();
 
         });
@@ -220,8 +229,8 @@ export class AppComponent implements OnInit {
 
         this.dataHandler.addTask(task).pipe(// сначала добавляем задачу
             concatMap(task => { // используем добавленный task (concatMap - для последовательного выполнения)
-                // .. и считаем кол-во задач в категории с учетом добавленной задачи
-                return this.dataHandler.getUncompletedCountInCategory(task.category).pipe(map(count => {
+                    // .. и считаем кол-во задач в категории с учетом добавленной задачи
+                    return this.dataHandler.getUncompletedCountInCategory(task.category).pipe(map(count => {
                         return ({t: task, count}); // в итоге получаем массив с добавленной задачей и кол-вом задач для категории
                     }));
                 }
@@ -229,7 +238,8 @@ export class AppComponent implements OnInit {
 
             const t = result.t as Task;
 
-            // если указана категория - обновляем счетчик для соотв. категории
+			// если указана категория - обновляем счетчик для соотв. категории
+            // чтобы не обновлять весь список - обновим точечно
             if (t.category) {
                 this.categoryMap.set(t.category, result.count);
             }
@@ -272,7 +282,6 @@ export class AppComponent implements OnInit {
     private toggleStat(showStat: boolean): void {
         this.showStat = showStat;
     }
-
 
 
 }

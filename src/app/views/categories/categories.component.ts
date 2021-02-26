@@ -18,13 +18,11 @@ export class CategoriesComponent implements OnInit {
     @Input()
     selectedCategory: Category;
 
-    // категории с кол-вом активных задач для каждой из них
-    @Input('categoryMap')
-    set setCategoryMap(categoryMap: Map<Category, number>) {
-        this.selectedCategoryMap = categoryMap;
-    }
+    // кол-во невыполненных задач всего
+    @Input()
+    uncompletedTotal: number;
 
-
+    private selectedCategoryMap: Map<Category, number>; // список всех категорий и кол-во активных задач
 
 
     // выбрали категорию из списка
@@ -52,7 +50,11 @@ export class CategoriesComponent implements OnInit {
     private indexMouseMove: number;
     private searchCategoryTitle: string; // текущее значение для поиска категорий
 
-    private selectedCategoryMap: Map<Category, number>; // список всех категорий и кол-во активных задач
+    // категории с кол-вом активных задач для каждой из них
+    @Input('categoryMap')
+    set setCategoryMap(categoryMap: Map<Category, number>) {
+        this.selectedCategoryMap = categoryMap;
+    }
 
 
     constructor(

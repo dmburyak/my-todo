@@ -45,23 +45,21 @@ export class TasksComponent implements OnInit {
     addTask = new EventEmitter<Task>();
 
 
-    // текущие задачи для отображения на странице
-    @Input('tasks')
-    private set setTasks(tasks: Task[]) { // напрямую не присваиваем значения в переменную, только через @Input
-        this.tasks = tasks;
-        this.fillTable();
-    }
+    @Input()
+    selectedCategory: Category;
+    private dataSource: MatTableDataSource<Task>; // контейнер - источник данных для таблицы
 
     @Input('priorities')
     set setPriorities(priorities: Priority[]) {
         this.priorities = priorities;
     }
 
-    @Input()
-    selectedCategory: Category;
-
-
-    private dataSource: MatTableDataSource<Task>; // контейнер - источник данных для таблицы
+    // текущие задачи для отображения на странице
+    @Input('tasks')
+    private set setTasks(tasks: Task[]) { // напрямую не присваиваем значения в переменную, только через @Input
+        this.tasks = tasks;
+        this.fillTable();
+    }
 
 
     // поиск
@@ -196,7 +194,6 @@ export class TasksComponent implements OnInit {
         });
     }
 
-
     // диалоговое окно подтверждения удаления
     private openDeleteDialog(task: Task): void {
         const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -242,7 +239,7 @@ export class TasksComponent implements OnInit {
 
 
     // фильтрация по приоритету
-    private onFilterByPriority(value: Priority): void{
+    private onFilterByPriority(value: Priority): void {
 
         // на всякий случай проверяем изменилось ли значение (хотя сам UI компонент должен это делать)
         if (value !== this.selectedPriorityFilter) {

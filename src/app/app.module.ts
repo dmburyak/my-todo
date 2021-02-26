@@ -52,6 +52,7 @@ registerLocaleData(localeRu);
         PrioritiesComponent,
         SettingsDialogComponent,
         EditPriorityDialogComponent
+
     ],
     imports: [
         BrowserModule,

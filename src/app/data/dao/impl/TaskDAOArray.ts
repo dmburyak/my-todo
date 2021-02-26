@@ -9,7 +9,7 @@ import {Priority} from '../../../model/Priority';
 // все методы DAO возвращают тип Observable, для реактивных возможностей
 // для работы с БД - нужно изменить реализацию каждого метода, чтобы обращался не к массивам, а делал RESTful запрос или напрямую к БД
 export class TaskDAOArray implements TaskDAO {
-    
+
     get(id: number): Observable<Task> {
 
         return of(TestData.tasks.find(task => task.id === id));
@@ -84,13 +84,6 @@ export class TaskDAOArray implements TaskDAO {
         return allTasks;
     }
 
-
-    // находит последний id (чтобы потом вставить новую запись с id, увеличенным на 1) - в реальной БД это происходит автоматически
-    private getLastIdTask(): number {
-        return Math.max.apply(Math, TestData.tasks.map(task => task.id)) + 1;
-    }
-
-
     // кол-во завершенных задач в заданной категории (если category === null, то для всех категорий)
     getCompletedCountInCategory(category: Category): Observable<number> {
         return of(this.searchTasks(category, null, true, null).length);
@@ -109,6 +102,11 @@ export class TaskDAOArray implements TaskDAO {
     // кол-во всех задач в общем
     getTotalCount(): Observable<number> {
         return of(TestData.tasks.length);
+    }
+
+    // находит последний id (чтобы потом вставить новую запись с id, увеличенным на 1) - в реальной БД это происходит автоматически
+    private getLastIdTask(): number {
+        return Math.max.apply(Math, TestData.tasks.map(task => task.id)) + 1;
     }
 
 
