@@ -64,6 +64,7 @@ export class EditCategoryDialogComponent implements OnInit {
 
     }
 
+    // можно ли удалять (для показа/скрытия кнопки)
     private canDelete(): boolean {
         return this.operType === OperType.EDIT;
     }

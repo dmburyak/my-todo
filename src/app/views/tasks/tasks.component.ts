@@ -10,6 +10,7 @@ import {ConfirmDialogComponent} from "../../dialog/confirm-dialog/confirm-dialog
 import {Category} from "../../model/Category";
 import {Priority} from "../../model/Priority";
 import {OperType} from "../../dialog/OperType";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 @Component({
     selector: 'app-tasks',
@@ -18,41 +19,28 @@ import {OperType} from "../../dialog/OperType";
 })
 export class TasksComponent implements OnInit {
 
-    // ссылки на компоненты таблицы
-    @ViewChild(MatPaginator, {static: false}) private paginator: MatPaginator;
-    @ViewChild(MatSort, {static: false}) private sort: MatSort;
-
-
     @Output()
-    deleteTask = new EventEmitter<Task>();
+    deleteTask = new EventEmitter<Task>(); // удаление задачи
+    @ViewChild(MatSort, {static: false}) private sort: MatSort;
+    @Output()
+    updateTask = new EventEmitter<Task>(); // обновление задачи
 
     @Output()
     selectCategory = new EventEmitter<Category>(); // нажали на категорию из списка задач
-
     @Output()
-    updateTask = new EventEmitter<Task>();
-
+    filterByTitle = new EventEmitter<string>(); // поиск задач по названию
     @Output()
-    filterByTitle = new EventEmitter<string>();
-
+    filterByStatus = new EventEmitter<boolean>(); // фильтрация задач по статусу
     @Output()
-    filterByStatus = new EventEmitter<boolean>();
-
+    filterByPriority = new EventEmitter<Priority>(); // фильтрация задач по приоритету
     @Output()
-    filterByPriority = new EventEmitter<Priority>();
-
-    @Output()
-    addTask = new EventEmitter<Task>();
-
-
+    addTask = new EventEmitter<Task>(); // добавление новой задачи
+    // текущая выбранная категория (используется при создании новой задачи, чтобы эта категория была сразу выбрана)
     @Input()
     selectedCategory: Category;
+    // ссылки на компоненты таблицы (должны присваиваться после обновления данных в таблице)
+    @ViewChild(MatPaginator, {static: false}) private paginator: MatPaginator;
     private dataSource: MatTableDataSource<Task>; // контейнер - источник данных для таблицы
-
-    @Input('priorities')
-    set setPriorities(priorities: Priority[]) {
-        this.priorities = priorities;
-    }
 
     // текущие задачи для отображения на странице
     @Input('tasks')
@@ -61,37 +49,43 @@ export class TasksComponent implements OnInit {
         this.fillTable();
     }
 
+    private tasks: Task[]; // задачи для отображения в таблице
 
     // поиск
     private searchTaskText: string; // текущее значение для поиска задач
     private selectedStatusFilter: boolean = null;   // по-умолчанию будут показываться задачи по всем статусам (решенные и нерешенные)
     private selectedPriorityFilter: Priority = null;   // по-умолчанию будут показываться задачи по всем приоритетам
 
+    private isMobile: boolean;
 
 
     // поля для таблицы (те, что отображают данные из задачи - должны совпадать с названиями переменных класса)
     private displayedColumns: string[] = ['color', 'id', 'title', 'date', 'priority', 'category', 'operations', 'select'];
 
     private priorities: Priority[]; // список приоритетов (для фильтрации задач)
-    private tasks: Task[];
-
-
 
     constructor(
         private dataHandler: DataHandlerService, // доступ к данным
-        private dialog: MatDialog, // работа с диалоговым окном
-
+        private dialog: MatDialog, // работа с диалоговыми окнами (показать, закрыть)
+        private deviceService: DeviceDetectorService // для определения типа устройства
     ) {
+
+        this.isMobile = this.deviceService.isMobile();
+
+    }
+
+    // все приоритеты (для фильтрации)
+    @Input('priorities')
+    set setPriorities(priorities: Priority[]) {
+        this.priorities = priorities;
     }
 
     ngOnInit() {
 
-        // this.dataHandler.getAllTasks().subscribe(tasks => this.tasks = tasks);
-
         // датасорс обязательно нужно создавать для таблицы, в него присваивается любой источник (БД, массивы, JSON и пр.)
         this.dataSource = new MatTableDataSource();
 
-        this.onSelectCategory(null);
+        this.onSelectCategory(null); // по-умолчанию показываем категорию "Все"
 
     }
 
@@ -123,7 +117,7 @@ export class TasksComponent implements OnInit {
 
         this.dataSource.data = this.tasks; // обновить источник данных (т.к. данные массива tasks обновились)
 
-        this.addTableObjects();
+        this.addTableObjects(); // применить постраничность и сортировку для новых данных
 
 
         // когда получаем новые данные..
@@ -212,12 +206,14 @@ export class TasksComponent implements OnInit {
         });
     }
 
+    // изменить статус задачи
     private onToggleStatus(task: Task): void {
         task.completed = !task.completed;
         this.updateTask.emit(task);
     }
 
 
+    // выбрали другую категорию
     private onSelectCategory(category: Category): void {
         this.selectCategory.emit(category);
     }
@@ -264,5 +260,15 @@ export class TasksComponent implements OnInit {
 
     }
 
+
+    // в зависимости от статуса задачи - вернуть фоноввый цвет
+    private getMobilePriorityBgColor(task: Task) {
+
+        if (task.priority != null && !task.completed) {
+            return task.priority.color;
+        }
+
+        return 'none';
+    }
 
 }

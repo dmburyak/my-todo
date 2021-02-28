@@ -4,6 +4,7 @@ import {Category} from "../../model/Category";
 import {EditCategoryDialogComponent} from "../../dialog/edit-category-dialog/edit-category-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {OperType} from "../../dialog/OperType";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 @Component({
     selector: 'app-categories',
@@ -12,18 +13,15 @@ import {OperType} from "../../dialog/OperType";
 })
 export class CategoriesComponent implements OnInit {
 
-    @Input()
-    categories: Category[];
 
     @Input()
     selectedCategory: Category;
 
+    private categoryMap: Map<Category, number>; // список всех категорий и кол-во активных задач
+
     // кол-во невыполненных задач всего
     @Input()
     uncompletedTotal: number;
-
-    private selectedCategoryMap: Map<Category, number>; // список всех категорий и кол-во активных задач
-
 
     // выбрали категорию из списка
     @Output()
@@ -46,23 +44,29 @@ export class CategoriesComponent implements OnInit {
     searchCategory = new EventEmitter<string>(); // передаем строку для поиска
 
 
+    private isMobile: boolean;
+
+
     // для отображения иконки редактирования при наведении на категорию
     private indexMouseMove: number;
     private searchCategoryTitle: string; // текущее значение для поиска категорий
-
-    // категории с кол-вом активных задач для каждой из них
-    @Input('categoryMap')
-    set setCategoryMap(categoryMap: Map<Category, number>) {
-        this.selectedCategoryMap = categoryMap;
-    }
-
+    private isTablet: boolean;
 
     constructor(
         private dataHandler: DataHandlerService,
         private dialog: MatDialog, // внедряем MatDialog, чтобы работать с диалоговыми окнами
-
+        private deviceService: DeviceDetectorService // для определения типа устройства
 
     ) {
+        this.isMobile = deviceService.isMobile();
+        this.isTablet = deviceService.isTablet();
+
+    }
+
+    // категории с кол-вом активных задач для каждой из них
+    @Input('categoryMap')
+    set setCategoryMap(categoryMap: Map<Category, number>) {
+        this.categoryMap = categoryMap;
     }
 
     // метод вызывается автоматически после инициализации компонента
@@ -137,7 +141,6 @@ export class CategoriesComponent implements OnInit {
         if (this.searchCategoryTitle == null) {
             return;
         }
-
         this.searchCategory.emit(this.searchCategoryTitle);
 
     }

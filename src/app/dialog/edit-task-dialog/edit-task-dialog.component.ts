@@ -6,6 +6,7 @@ import {Category} from '../../model/Category';
 import {DataHandlerService} from '../../service/data-handler.service';
 import {ConfirmDialogComponent} from '../confirm-dialog/confirm-dialog.component';
 import {OperType} from "../OperType";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 @Component({
   selector: 'app-edit-task-dialog',
@@ -31,12 +32,18 @@ export class EditTaskDialogComponent implements OnInit {
   private tmpPriority: Priority;
   private tmpDate: Date;
 
+  private isMobile: boolean;
+
   constructor(
       private dialogRef: MatDialogRef<EditTaskDialogComponent>, // // для возможности работы с текущим диалог. окном
       @Inject(MAT_DIALOG_DATA) private data: [Task, string, OperType], // данные, которые передали в диалоговое окно
       private dataHandler: DataHandlerService, // ссылка на сервис для работы с данными
-      private dialog: MatDialog // для открытия нового диалогового окна (из текущего) - например для подтверждения удаления
+      private dialog: MatDialog, // для открытия нового диалогового окна (из текущего) - например для подтверждения удаления
+      private deviceService: DeviceDetectorService // для определения типа устройства
+
   ) {
+
+    this.isMobile = deviceService.isMobile();
   }
 
   ngOnInit() {
@@ -108,10 +115,12 @@ export class EditTaskDialogComponent implements OnInit {
     this.dialogRef.close('activate');
   }
 
+  // можно ли удалять (для показа/скрытия кнопки)
   private canDelete(): boolean {
     return this.operType === OperType.EDIT;
   }
 
+  // можно ли активировать/завершить задачу (для показа/скрытия кнопки)
   private canActivateDesactivate(): boolean {
     return this.operType === OperType.EDIT;
   }

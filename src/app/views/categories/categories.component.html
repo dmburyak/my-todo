@@ -74,7 +74,7 @@
                 <!-- разделитель-->
                 <div class="line"></div>
 
-                <div *ngIf="categories.length === 0"><p class="not-found">Ничего не найдено</p></div>
+                <div *ngIf="categoryMap.size === 0"><p class="not-found">Ничего не найдено</p></div>
 
 
                 <li
@@ -82,7 +82,7 @@
 
                         (mouseleave)="showEditIcon(null)"
 
-                        *ngFor="let mapValue of selectedCategoryMap | keyvalue; let index = index"
+                        *ngFor="let mapValue of categoryMap | keyvalue; let index = index"
                         [class.active]="mapValue.key === selectedCategory"
 
 
@@ -99,7 +99,7 @@
                         <span class="edit-category-icon-area">
 
             <mat-icon
-                    *ngIf="indexMouseMove === index"
+                    *ngIf="indexMouseMove === index || isMobile || isTablet"
                     (click)="$event.stopPropagation(); openEditDialog(mapValue.key)"
 
                     class="edit-category-icon"
